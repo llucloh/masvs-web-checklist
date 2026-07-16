@@ -2,7 +2,7 @@
 
 An interactive tool for performing mobile application security audits following the **OWASP Mobile Application Security Verification Standard (MASVS) v2.0** and the **MASTG v1.7.0**.
 
-🔗 **[Open the tool →](https://llucloh.github.io/masvs-checklist)**
+🔗 **[Open the tool →](https://llucloh.github.io/masvs-web-checklist/)**
 
 ---
 
