@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OWASP MASVS v2 Security Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lexend:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ede9e2;
+  --bg-alt: #f5f2ed;
+  --surface: #fefdfb;
+  --surface-dim: #f9f6f1;
+  --border: #ddd8cf;
+  --border-subtle: #e8e3da;
+  --text-primary: #1f1f1f;
+  --text-secondary: #5a5a5a;
+  --text-muted: #8b8b8b;
+  --accent-warm: #9b7563;
+  --accent-light: #c4876a;
+  --accent-sage: #6b8e7f;
+  --accent-slate: #4a5568;
+  --danger: #a85554;
+  --success: #7a9e7a;
+  --radius: 8px;
+  --radius-md: 6px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+  color: var(--text-primary);
+  font-family: 'Lexend', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(196,135,106,0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(107,142,127,0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER ── */
+header {
+  margin-bottom: 48px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  flex: 1;
+  min-width: 300px;
+}
+
+.brand h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  letter-spacing: -1.5px;
+}
+
+.brand h1 .owasp {
+  color: var(--accent-warm);
+}
+
+.brand h1 .v2 {
+  font-size: 0.5em;
+  vertical-align: super;
+  margin-left: 4px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.brand-sub {
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  margin-top: 12px;
+}
+
+.header-accent {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-warm) 0%, var(--accent-sage) 100%);
+  margin-top: 16px;
+  border-radius: 2px;
+}
+
+.proj-section {
+  flex: 1;
+  min-width: 350px;
+}
+
+.proj-label {
+  font-family: 'Lexend', sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.proj-controls {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.proj-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: 'Lexend', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.proj-input:focus {
+  outline: none;
+  border-color: var(--accent-warm);
+  box-shadow: 0 0 0 3px rgba(155, 117, 99, 0.08);
+}
+
+.proj-input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.btn {
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.btn:hover {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+  background: rgba(155, 117, 99, 0.04);
+}
+
+.btn.primary {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: var(--surface);
+}
+
+.btn.primary:hover {
+  background: #8a6655;
+  border-color: #8a6655;
+}
+
+.btn.danger {
+  color: var(--danger);
+}
+
+.btn.danger:hover {
+  border-color: var(--danger);
+  background: rgba(168, 85, 84, 0.04);
+}
+
+/* ── PROGRESS OVERVIEW ── */
+.overview-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 40px;
+  margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+}
+
+.overview-left h3 {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 18px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--border-subtle);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-warm) 0%, var(--accent-light) 100%);
+  border-radius: 3px;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.overall-percent {
+  text-align: center;
+}
+
+.overall-percent-number {
+  font-family: 'Lora', serif;
+  font-size: 64px;
+  font-weight: 600;
+  color: var(--accent-warm);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.overall-percent-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── CATEGORY GRID ── */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.category-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--c);
+}
+
+.category-card:hover {
+  border-color: var(--c);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(31, 31, 31, 0.08);
+}
+
+.cat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: 500;
+}
+
+.cat-count {
+  font-family: 'Lora', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--c);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.cat-total {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cat-progress {
+  height: 2px;
+  background: var(--border-subtle);
+  margin-top: 14px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.cat-progress-fill {
+  height: 100%;
+  background: var(--c);
+  transition: width 0.4s;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: 'Lexend', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+  background: rgba(155, 117, 99, 0.04);
+}
+
+.filter-btn.active {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: var(--surface);
+}
+
+.platform-btn.android.active {
+  background: #6b8e7f;
+  border-color: #6b8e7f;
+  color: var(--surface);
+}
+
+.platform-btn.ios.active {
+  background: #4a5568;
+  border-color: #4a5568;
+  color: var(--surface);
+}
+
+.toolbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+
+.search-wrap {
+  margin-left: auto;
+  position: relative;
+  flex: 0 1 220px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.search-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: var(--surface-dim);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.search-wrap input:focus {
+  outline: none;
+  border-color: var(--accent-warm);
+  background: var(--surface);
+  box-shadow: 0 0 0 2px rgba(155, 117, 99, 0.08);
+}
+
+.search-wrap input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── SECTIONS ── */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.section.hidden {
+  display: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  background: var(--surface-dim);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.section-header:hover {
+  background: #f7f4ef;
+}
+
+.section-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c);
+  flex-shrink: 0;
+}
+
+.section-id {
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c);
+  letter-spacing: 0.4px;
+  min-width: 160px;
+}
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+  font-weight: 400;
+}
+
+.section-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.section-mini-bar {
+  width: 50px;
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.section-mini-fill {
+  height: 100%;
+  background: var(--c);
+  transition: width 0.4s;
+}
+
+.section-badge {
+  font-family: 'Lexend', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c);
+  min-width: 50px;
+  text-align: right;
+}
+
+.section-arrow {
+  color: var(--text-muted);
+  font-size: 11px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.section.closed .section-arrow {
+  transform: rotate(-90deg);
+}
+
+.section.closed .section-content {
+  display: none;
+}
+
+.section-content {
+  background: var(--surface);
+}
+
+/* ── CONTROLS ── */
+.control {
+  border-top: 1px solid var(--border-subtle);
+  padding: 18px 24px;
+  transition: background 0.15s;
+}
+
+.control:hover {
+  background: rgba(196, 135, 106, 0.02);
+}
+
+.control-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.control-indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  margin-top: 6px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.control.completed .control-indicator {
+  background: var(--success);
+  border-color: var(--success);
+  box-shadow: 0 0 4px rgba(122, 158, 122, 0.4);
+}
+
+.control-info {
+  flex: 1;
+}
+
+.control-id {
+  font-family: 'Lexend', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c);
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+
+.control-id a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.control-id a:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.control-count {
+  display: inline-block;
+  font-family: 'Lexend', sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface-dim);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
+.control-desc {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.control.completed .control-desc {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(0, 0, 0, 0.1);
+}
+
+.control-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-family: 'Lexend', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.control-expand:hover {
+  border-color: var(--c);
+  color: var(--c);
+}
+
+.control-expand .arrow {
+  transition: transform 0.2s;
+}
+
+.control.expanded .control-expand .arrow {
+  transform: rotate(180deg);
+}
+
+.control-progress {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 6px 0;
+}
+
+.control-progress-fill {
+  height: 100%;
+  background: var(--c);
+  transition: width 0.3s;
+}
+
+/* ── TESTS ── */
+.tests {
+  display: none;
+  background: var(--surface-dim);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.control.expanded .tests {
+  display: block;
+}
+
+.test {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.test:last-child {
+  border-bottom: none;
+}
+
+.test.hidden {
+  display: none;
+}
+
+.test-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.test-checkbox:checked {
+  background: var(--c);
+  border-color: var(--c);
+}
+
+.test-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--surface);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.test-checkbox:hover {
+  border-color: var(--c);
+}
+
+.test-platform {
+  font-family: 'Lexend', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.test-platform.android {
+  background: rgba(107, 142, 127, 0.12);
+  color: #6b8e7f;
+  border: 1px solid rgba(107, 142, 127, 0.2);
+}
+
+.test-platform.ios {
+  background: rgba(74, 85, 104, 0.12);
+  color: #4a5568;
+  border: 1px solid rgba(74, 85, 104, 0.2);
+}
+
+.test-id {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 130px;
+}
+
+.test-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.test.completed .test-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.test-link {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.test-link:hover {
+  color: var(--c);
+  border-color: var(--c);
+}
+
+/* ── NOTES ── */
+.control-notes {
+  margin-top: 8px;
+}
+
+.note-toggle {
+  font-family: 'Lexend', sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.note-toggle:hover {
+  color: var(--c);
+}
+
+.note-input {
+  display: none;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--surface-dim);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 44px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.note-input.visible {
+  display: block;
+}
+
+.note-input:focus {
+  border-color: var(--c);
+  box-shadow: 0 0 0 2px rgba(155, 117, 99, 0.08);
+}
+
+/* ── EXPORT ── */
+.export-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+
+.export-label {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-right: auto;
+}
+
+/* ── FOOTER ── */
+footer {
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+footer a {
+  color: var(--accent-warm);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+footer a:hover {
+  color: var(--accent-light);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: var(--accent-warm);
+  color: var(--surface);
+  font-family: 'Lexend', sans-serif;
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  z-index: 999;
+  transform: translateY(120px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(31, 31, 31, 0.15);
+}
+
+.toast.show {
+  transform: none;
+  opacity: 1;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section {
+  animation: slideIn 0.3s ease-out both;
+}
+
+.categories-grid .category-card {
+  animation: slideIn 0.25s ease-out both;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 32px 20px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .overview-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .section-desc {
+    display: none;
+  }
+
+  .section-progress {
+    display: none;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrap {
+    flex: 1;
+  }
+
+  .search-wrap input {
+    width: 100%;
+  }
+
+  .filter-group {
+    flex: 1;
+  }
+
+  .export-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .export-label {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .btn-group {
+    width: 100%;
+  }
+
+  .btn-group .btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media print {
+  body::before {
+    display: none;
+  }
+
+  .toolbar,
+  .proj-section,
+  .export-section,
+  .note-toggle,
+  footer {
+    display: none;
+  }
+
+  .note-input {
+    display: block !important;
+  }
+
+  .section.closed .section-content {
+    display: block;
+  }
+
+  .tests {
+    display: block !important;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="header-content">
+    <div class="brand">
+      <h1><span class="owasp">OWASP</span> MASVS<span class="v2">v2</span></h1>
+      <div class="header-accent"></div>
+      <p class="brand-sub">Mobile Application Security Verification Standard</p>
+    </div>
+    <div class="proj-section">
+      <label class="proj-label">Project Name</label>
+      <div class="proj-controls">
+        <input type="text" id="projName" class="proj-input" placeholder="Your app name..." />
+        <div class="btn-group">
+          <button class="btn primary" onclick="saveProject()">Save</button>
+          <button class="btn" onclick="loadProject()">Load</button>
+          <button class="btn" onclick="newProject()">New</button>
+          <button class="btn danger" onclick="resetAll()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overview-section">
+  <div class="overview-left">
+    <h3>Assessment Progress</h3>
+    <div class="progress-bar"><div class="progress-fill" id="overallFill" style="width:0%"></div></div>
+    <p class="progress-text" id="overallCounts">0 of 0 tests complete</p>
+  </div>
+  <div class="overall-percent">
+    <div class="overall-percent-number" id="overallPct">0%</div>
+    <div class="overall-percent-label">Completion</div>
+  </div>
+</div>
+
+<div class="categories-grid" id="catCards"></div>
+
+<div class="toolbar">
+  <div class="filter-group">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('pending',this)">Pending</button>
+    <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+  </div>
+  <div class="toolbar-sep"></div>
+  <div class="filter-group">
+    <button class="filter-btn platform-btn android active" onclick="togglePlatform('android',this)">Android</button>
+    <button class="filter-btn platform-btn ios active" onclick="togglePlatform('ios',this)">iOS</button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" placeholder="Search tests..." oninput="doSearch(this.value)" />
+  </div>
+</div>
+
+<div id="main"></div>
+
+<div class="export-section">
+  <span class="export-label">Export</span>
+  <button class="btn" onclick="exportJSON()">JSON</button>
+  <button class="btn" onclick="exportMarkdown()">Markdown</button>
+  <button class="btn" onclick="window.print()">Print / PDF</button>
+</div>
+
+<footer>
+  <span>OWASP MASVS v2.0.0 · MASTG v1.7.0 · <a href="https://mas.owasp.org" target="_blank">mas.owasp.org</a></span>
+  <span>Made by llucloh · Data stored locally</span>
+</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CAT_META={
+  'MASVS-STORAGE':{color:'#9b7563',desc:'Secure data storage (data-at-rest)'},
+  'MASVS-CRYPTO':{color:'#6b8e7f',desc:'Cryptographic best practices'},
+  'MASVS-AUTH':{color:'#a85554',desc:'Authentication & authorization'},
+  'MASVS-NETWORK':{color:'#4a5568',desc:'Secure network communication'},
+  'MASVS-PLATFORM':{color:'#8b7a6b',desc:'Platform interaction & WebViews'},
+  'MASVS-CODE':{color:'#7a6b8e',desc:'Code quality & update mechanisms'},
+  'MASVS-RESILIENCE':{color:'#8b6b6b',desc:'Anti-reversing & tampering'}
+};
+
+const MASVS={
+  "MASVS-STORAGE":[
+    {"id":"MASVS-STORAGE-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-STORAGE-1","description":"The app securely stores sensitive data.","tests":[{"id":"MASTG-TEST-0001","name":"Testing Local Storage for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0001","platform":"android"},{"id":"MASTG-TEST-0012","name":"Testing the Device-Access-Security Policy","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0012","platform":"android"},{"id":"MASTG-TEST-0052","name":"Testing Local Data Storage","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0052","platform":"ios"}]},
+    {"id":"MASVS-STORAGE-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-STORAGE-2","description":"The app prevents leakage of sensitive data.","tests":[{"id":"MASTG-TEST-0004","name":"Determining Whether Sensitive Data Is Shared with Third Parties via Embedded Services","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0004","platform":"android"},{"id":"MASTG-TEST-0005","name":"Determining Whether Sensitive Data Is Shared with Third Parties via Notifications","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0005","platform":"android"},{"id":"MASTG-TEST-0009","name":"Testing Backups for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0009","platform":"android"},{"id":"MASTG-TEST-0011","name":"Testing Memory for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0011","platform":"android"},{"id":"MASTG-TEST-0006","name":"Determining Whether the Keyboard Cache Is Disabled for Text Input Fields","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0006","platform":"android"},{"id":"MASTG-TEST-0003","name":"Testing Logs for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-STORAGE/MASTG-TEST-0003","platform":"android"},{"id":"MASTG-TEST-0053","name":"Checking Logs for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0053","platform":"ios"},{"id":"MASTG-TEST-0060","name":"Testing Memory for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0060","platform":"ios"},{"id":"MASTG-TEST-0058","name":"Testing Backups for Sensitive Data","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0058","platform":"ios"},{"id":"MASTG-TEST-0055","name":"Finding Sensitive Data in the Keyboard Cache","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0055","platform":"ios"},{"id":"MASTG-TEST-0054","name":"Determining Whether Sensitive Data Is Shared with Third Parties","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0054","platform":"ios"}]}
+  ],
+  "MASVS-CRYPTO":[
+    {"id":"MASVS-CRYPTO-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-CRYPTO-1","description":"The app employs current strong cryptography and uses it according to industry best practices.","tests":[{"id":"MASTG-TEST-0013","name":"Testing Symmetric Cryptography","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CRYPTO/MASTG-TEST-0013","platform":"android"},{"id":"MASTG-TEST-0014","name":"Testing the Configuration of Cryptographic Standard Algorithms","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CRYPTO/MASTG-TEST-0014","platform":"android"},{"id":"MASTG-TEST-0016","name":"Testing Random Number Generation","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CRYPTO/MASTG-TEST-0016","platform":"android"},{"id":"MASTG-TEST-0061","name":"Verifying the Configuration of Cryptographic Standard Algorithms","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CRYPTO/MASTG-TEST-0061","platform":"ios"},{"id":"MASTG-TEST-0063","name":"Testing Random Number Generation","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CRYPTO/MASTG-TEST-0063","platform":"ios"}]},
+    {"id":"MASVS-CRYPTO-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-CRYPTO-2","description":"The app performs key management according to industry best practices.","tests":[{"id":"MASTG-TEST-0015","name":"Testing the Purposes of Keys","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CRYPTO/MASTG-TEST-0015","platform":"android"},{"id":"MASTG-TEST-0062","name":"Testing Key Management","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CRYPTO/MASTG-TEST-0062","platform":"ios"}]}
+  ],
+  "MASVS-AUTH":[
+    {"id":"MASVS-AUTH-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-AUTH-1","description":"The app uses secure authentication and authorization protocols and follows the relevant best practices.","tests":[]},
+    {"id":"MASVS-AUTH-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-AUTH-2","description":"The app performs local authentication securely according to the platform best practices.","tests":[{"id":"MASTG-TEST-0018","name":"Testing Biometric Authentication","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-AUTH/MASTG-TEST-0018","platform":"android"},{"id":"MASTG-TEST-0017","name":"Testing Confirm Credentials","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-AUTH/MASTG-TEST-0017","platform":"android"},{"id":"MASTG-TEST-0064","name":"Testing Local Authentication","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-AUTH/MASTG-TEST-0064","platform":"ios"}]},
+    {"id":"MASVS-AUTH-3","url":"https://mas.owasp.org//MASVS/controls/MASVS-AUTH-3","description":"The app secures sensitive operations with additional authentication.","tests":[]}
+  ],
+  "MASVS-NETWORK":[
+    {"id":"MASVS-NETWORK-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-NETWORK-1","description":"The app secures all network traffic according to the current best practices.","tests":[{"id":"MASTG-TEST-0021","name":"Testing Endpoint Identify Verification","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-NETWORK/MASTG-TEST-0021","platform":"android"},{"id":"MASTG-TEST-0023","name":"Testing the Security Provider","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-NETWORK/MASTG-TEST-0023","platform":"android"},{"id":"MASTG-TEST-0019","name":"Testing Data Encryption on the Network","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-NETWORK/MASTG-TEST-0019","platform":"android"},{"id":"MASTG-TEST-0020","name":"Testing the TLS Settings","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-NETWORK/MASTG-TEST-0020","platform":"android"},{"id":"MASTG-TEST-0066","name":"Testing the TLS Settings","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-NETWORK/MASTG-TEST-0066","platform":"ios"},{"id":"MASTG-TEST-0065","name":"Testing Data Encryption on the Network","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-NETWORK/MASTG-TEST-0065","platform":"ios"}]},
+    {"id":"MASVS-NETWORK-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-NETWORK-2","description":"The app performs identity pinning for all remote endpoints under the developer's control.","tests":[{"id":"MASTG-TEST-0022","name":"Testing Custom Certificate Stores and Certificate Pinning","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-NETWORK/MASTG-TEST-0022","platform":"android"},{"id":"MASTG-TEST-0067","name":"Testing Custom Certificate Stores and Certificate Pinning","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-NETWORK/MASTG-TEST-0067","platform":"ios"}]}
+  ],
+  "MASVS-PLATFORM":[
+    {"id":"MASVS-PLATFORM-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-PLATFORM-1","description":"The app only requests the necessary permissions.","tests":[{"id":"MASTG-TEST-0024","name":"Testing App Permissions","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0024","platform":"android"},{"id":"MASTG-TEST-0068","name":"Testing App Permissions","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0068","platform":"ios"}]},
+    {"id":"MASVS-PLATFORM-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-PLATFORM-2","description":"The app uses IPC mechanisms securely.","tests":[{"id":"MASTG-TEST-0028","name":"Testing Deep Links","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0028","platform":"android"},{"id":"MASTG-TEST-0029","name":"Testing for Vulnerable Implementation of PendingIntent","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0029","platform":"android"},{"id":"MASTG-TEST-0030","name":"Testing for Tapjacking and Overlay Attacks","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0030","platform":"android"},{"id":"MASTG-TEST-0031","name":"Testing for App Notifications","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0031","platform":"android"},{"id":"MASTG-TEST-0032","name":"Testing Implicit Intents","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0032","platform":"android"},{"id":"MASTG-TEST-0033","name":"Testing for Sensitive Functionality Exposure Through IPC","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0033","platform":"android"},{"id":"MASTG-TEST-0069","name":"Testing Custom URL Schemes","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0069","platform":"ios"},{"id":"MASTG-TEST-0070","name":"Testing UIActivity Sharing","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0070","platform":"ios"},{"id":"MASTG-TEST-0071","name":"Testing App Extensions","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0071","platform":"ios"},{"id":"MASTG-TEST-0072","name":"Testing UIPasteboard","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0072","platform":"ios"}]},
+    {"id":"MASVS-PLATFORM-3","url":"https://mas.owasp.org//MASVS/controls/MASVS-PLATFORM-3","description":"The app uses WebViews securely.","tests":[{"id":"MASTG-TEST-0035","name":"Testing JavaScript Execution in WebViews","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0035","platform":"android"},{"id":"MASTG-TEST-0036","name":"Testing WebView Protocol Handlers","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0036","platform":"android"},{"id":"MASTG-TEST-0037","name":"Checking for Sensitive Data Disclosed Through the User Interface","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-PLATFORM/MASTG-TEST-0037","platform":"android"},{"id":"MASTG-TEST-0073","name":"Testing WebViews for Sensitive Data Disclosure Through the User Interface","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0073","platform":"ios"},{"id":"MASTG-TEST-0074","name":"Testing iOS WebViews","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0074","platform":"ios"},{"id":"MASTG-TEST-0075","name":"Determining Whether Native Methods Are Exposed Through WebViews","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-PLATFORM/MASTG-TEST-0075","platform":"ios"}]}
+  ],
+  "MASVS-CODE":[
+    {"id":"MASVS-CODE-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-CODE-1","description":"The app requires an up-to-date platform version.","tests":[]},
+    {"id":"MASVS-CODE-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-CODE-2","description":"The app has a mechanism for enforcing app updates.","tests":[]},
+    {"id":"MASVS-CODE-3","url":"https://mas.owasp.org//MASVS/controls/MASVS-CODE-3","description":"The app only uses software components without known vulnerabilities.","tests":[{"id":"MASTG-TEST-0042","name":"Checking for Weaknesses in Third Party Libraries","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0042","platform":"android"},{"id":"MASTG-TEST-0078","name":"Checking for Weaknesses in Third Party Libraries","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CODE/MASTG-TEST-0078","platform":"ios"}]},
+    {"id":"MASVS-CODE-4","url":"https://mas.owasp.org//MASVS/controls/MASVS-CODE-4","description":"The app validates and sanitizes all untrusted inputs.","tests":[{"id":"MASTG-TEST-0044","name":"Make Sure That Free Security Features Are Activated","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0044","platform":"android"},{"id":"MASTG-TEST-0025","name":"Testing for Injection Flaws","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0025","platform":"android"},{"id":"MASTG-TEST-0002","name":"Testing Local Storage for Input Validation","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0002","platform":"android"},{"id":"MASTG-TEST-0043","name":"Memory Corruption Bugs","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0043","platform":"android"},{"id":"MASTG-TEST-0034","name":"Testing Object Persistence","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0034","platform":"android"},{"id":"MASTG-TEST-0026","name":"Testing Implicit Intents","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0026","platform":"android"},{"id":"MASTG-TEST-0027","name":"Testing for URL Loading in WebViews","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-CODE/MASTG-TEST-0027","platform":"android"},{"id":"MASTG-TEST-0079","name":"Testing Object Persistence","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CODE/MASTG-TEST-0079","platform":"ios"},{"id":"MASTG-TEST-0086","name":"Memory Corruption Bugs","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CODE/MASTG-TEST-0086","platform":"ios"},{"id":"MASTG-TEST-0087","name":"Make Sure That Free Security Features Are Activated","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-CODE/MASTG-TEST-0087","platform":"ios"}]}
+  ],
+  "MASVS-RESILIENCE":[
+    {"id":"MASVS-RESILIENCE-1","url":"https://mas.owasp.org//MASVS/controls/MASVS-RESILIENCE-1","description":"The app validates the integrity of the platform.","tests":[{"id":"MASTG-TEST-0045","name":"Testing Root Detection","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0045","platform":"android"},{"id":"MASTG-TEST-0049","name":"Testing Emulator Detection","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0049","platform":"android"},{"id":"MASTG-TEST-0088","name":"Testing Jailbreak Detection","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0088","platform":"ios"},{"id":"MASTG-TEST-0092","name":"Testing Emulator Detection","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0092","platform":"ios"}]},
+    {"id":"MASVS-RESILIENCE-2","url":"https://mas.owasp.org//MASVS/controls/MASVS-RESILIENCE-2","description":"The app implements anti-tampering mechanisms.","tests":[{"id":"MASTG-TEST-0047","name":"Testing File Integrity Checks","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0047","platform":"android"},{"id":"MASTG-TEST-0050","name":"Testing Runtime Integrity Checks","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0050","platform":"android"},{"id":"MASTG-TEST-0038","name":"Making Sure that the App is Properly Signed","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0038","platform":"android"},{"id":"MASTG-TEST-0090","name":"Testing File Integrity Checks","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0090","platform":"ios"},{"id":"MASTG-TEST-0081","name":"Making Sure that the App Is Properly Signed","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0081","platform":"ios"}]},
+    {"id":"MASVS-RESILIENCE-3","url":"https://mas.owasp.org//MASVS/controls/MASVS-RESILIENCE-3","description":"The app implements anti-static analysis mechanisms.","tests":[{"id":"MASTG-TEST-0040","name":"Testing for Debugging Symbols","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0040","platform":"android"},{"id":"MASTG-TEST-0041","name":"Testing for Debugging Code and Verbose Error Logging","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0041","platform":"android"},{"id":"MASTG-TEST-0051","name":"Testing Obfuscation","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0051","platform":"android"},{"id":"MASTG-TEST-0084","name":"Testing for Debugging Code and Verbose Error Logging","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0084","platform":"ios"},{"id":"MASTG-TEST-0093","name":"Testing Obfuscation","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0093","platform":"ios"},{"id":"MASTG-TEST-0083","name":"Testing for Debugging Symbols","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0083","platform":"ios"}]},
+    {"id":"MASVS-RESILIENCE-4","url":"https://mas.owasp.org//MASVS/controls/MASVS-RESILIENCE-4","description":"The app implements anti-dynamic analysis techniques.","tests":[{"id":"MASTG-TEST-0039","name":"Testing whether the App is Debuggable","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0039","platform":"android"},{"id":"MASTG-TEST-0048","name":"Testing Reverse Engineering Tools Detection","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0048","platform":"android"},{"id":"MASTG-TEST-0046","name":"Testing Anti-Debugging Detection","url":"https://mas.owasp.org//MASTG/tests/android/MASVS-RESILIENCE/MASTG-TEST-0046","platform":"android"},{"id":"MASTG-TEST-0089","name":"Testing Anti-Debugging Detection","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0089","platform":"ios"},{"id":"MASTG-TEST-0082","name":"Testing whether the App is Debuggable","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0082","platform":"ios"},{"id":"MASTG-TEST-0091","name":"Testing Reverse Engineering Tools Detection","url":"https://mas.owasp.org//MASTG/tests/ios/MASVS-RESILIENCE/MASTG-TEST-0091","platform":"ios"}]}
+  ]
+};
+
+let state={},ctrlState={},filterMode='all',platforms={android:true,ios:true},searchQ='';
+
+function proj(){return document.getElementById('projName').value.trim()||'default';}
+function loadState(){const s=localStorage.getItem('masvs2_'+proj());state=s?JSON.parse(s):{};const cs=localStorage.getItem('masvs2_ctrl_'+proj());ctrlState=cs?JSON.parse(cs):{};}
+function saveState(){localStorage.setItem('masvs2_'+proj(),JSON.stringify(state));localStorage.setItem('masvs2_ctrl_'+proj(),JSON.stringify(ctrlState));localStorage.setItem('masvs2_last',proj());}
+function getT(id){return state[id]||{done:false,note:''};}
+function getC(id){return ctrlState[id]||{note:''};}
+
+function render(){renderCards();renderMain();updateOverall();}
+
+function countFor(catId){
+  const controls=MASVS[catId];
+  let total=0,done=0;
+  controls.forEach(ctrl=>{
+    const tests=ctrl.tests.filter(t=>platforms[t.platform]);
+    total+=tests.length;
+    done+=tests.filter(t=>getT(t.id).done).length;
+    if(ctrl.tests.length===0){
+      total++;
+      if(getT(ctrl.id+'__ctrl').done)done++;
+    }
+  });
+  return{total,done};
+}
+
+function renderCards(){
+  const el=document.getElementById('catCards');
+  el.innerHTML='';
+  Object.keys(CAT_META).forEach((catId,idx)=>{
+    const m=CAT_META[catId];
+    const{total,done}=countFor(catId);
+    const pct=total>0?Math.round(done/total*100):0;
+    const card=document.createElement('div');
+    card.className='category-card';
+    card.style.cssText=`--c:${m.color};animation-delay:${idx*0.03}s`;
+    card.innerHTML=`<span class="cat-label">${catId}</span><div class="cat-count">${done}</div><div class="cat-total">/ ${total} tests</div><div class="cat-progress"><div class="cat-progress-fill" style="width:${pct}%"></div></div>`;
+    card.onclick=()=>scrollTo(catId);
+    el.appendChild(card);
+  });
+}
+
+function updateOverall(){
+  let total=0,done=0;
+  Object.keys(MASVS).forEach(catId=>{const c=countFor(catId);total+=c.total;done+=c.done;});
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('overallFill').style.width=pct+'%';
+  document.getElementById('overallPct').textContent=pct+'%';
+  document.getElementById('overallCounts').textContent=done+' of '+total+' tests complete';
+}
+
+function renderMain(){
+  const container=document.getElementById('main');
+  container.innerHTML='';
+  Object.keys(MASVS).forEach((catId,idx)=>{
+    const meta=CAT_META[catId];
+    const controls=MASVS[catId];
+    const{total,done}=countFor(catId);
+    const pct=total>0?Math.round(done/total*100):0;
+    const section=document.createElement('div');
+    section.className='section';
+    section.id='cat_'+catId;
+    section.style.cssText=`--c:${meta.color};animation-delay:${idx*0.04}s`;
+    section.innerHTML=`<div class="section-header" onclick="toggleSection('${catId}')"><div class="section-dot"></div><div class="section-id">${catId}</div><div class="section-desc">${meta.desc}</div><div class="section-progress"><div class="section-mini-bar"><div class="section-mini-fill" style="width:${pct}%"></div></div><div class="section-badge" id="badge_${catId}">${done}/${total}</div></div><div class="section-arrow">▼</div></div><div class="section-content" id="sc_${catId}">${controls.map(ctrl=>renderControl(ctrl,meta.color)).join('')}</div>`;
+    container.appendChild(section);
+  });
+  applyFilters();
+}
+
+function renderControl(ctrl,color){
+  const visTests=ctrl.tests.filter(t=>platforms[t.platform]);
+  const totalT=ctrl.tests.length===0?1:visTests.length;
+  const doneT=ctrl.tests.length===0?(getT(ctrl.id+'__ctrl').done?1:0):visTests.filter(t=>getT(t.id).done).length;
+  const allDone=doneT===totalT&&totalT>0;
+  const note=getC(ctrl.id).note||'';
+  const hasNote=note.length>0;
+  const pct=totalT>0?Math.round(doneT/totalT*100):0;
+  const testRows=ctrl.tests.length===0
+    ?`<div class="test" id="ti_${ctrl.id}__ctrl"><input type="checkbox" class="test-checkbox" ${getT(ctrl.id+'__ctrl').done?'checked':''} style="--c:${color}" onchange="toggleTest('${ctrl.id}__ctrl','${ctrl.id}',this.checked)" onclick="event.stopPropagation()"><span class="test-platform" style="color:${color};background:${color}18;border:1px solid ${color}30">CTRL</span><span class="test-id">reviewed</span><span class="test-name">Mark as reviewed (no specific MASTG tests)</span></div>`
+    :visTests.map(t=>`<div class="test ${getT(t.id).done?'completed':''}" id="ti_${t.id}"><input type="checkbox" class="test-checkbox" ${getT(t.id).done?'checked':''} onchange="toggleTest('${t.id}','${ctrl.id}',this.checked)" onclick="event.stopPropagation()"><span class="test-platform ${t.platform}">${t.platform}</span><span class="test-id">${t.id}</span><span class="test-name">${t.name}</span><a class="test-link" href="${t.url}" target="_blank">View</a></div>`).join('');
+  return `<div class="control ${allDone?'completed':''}" id="cg_${ctrl.id}" style="--c:${color}"><div class="control-header" onclick="toggleControl('${ctrl.id}')"><div class="control-indicator"></div><div class="control-info"><div class="control-id"><a href="${ctrl.url}" target="_blank" onclick="event.stopPropagation()">${ctrl.id}</a><span class="control-count">${ctrl.tests.length===0?'0 tests':ctrl.tests.length+' tests'}</span></div><div class="control-desc">${ctrl.description}</div><button class="control-expand"><span>${doneT}/${totalT}</span><span class="arrow">▼</span></button></div></div><div class="control-progress"><div class="control-progress-fill" id="cpf_${ctrl.id}" style="width:${pct}%"></div></div><div class="control-notes"><button class="note-toggle" onclick="toggleNote('${ctrl.id}')">${hasNote?'📝 note':'+ add note'}</button><textarea class="note-input ${hasNote?'visible':''}" id="cn_${ctrl.id}" placeholder="Your findings..." oninput="saveNote('${ctrl.id}',this.value)">${note}</textarea></div><div class="tests" id="tl_${ctrl.id}">${testRows}</div></div>`;
+}
+
+function toggleSection(catId){document.getElementById('cat_'+catId).classList.toggle('closed');}
+function toggleControl(ctrlId){document.getElementById('cg_'+ctrlId).classList.toggle('expanded');}
+
+function toggleTest(testId,ctrlId,checked){
+  if(!state[testId])state[testId]={done:false,note:''};
+  state[testId].done=checked;
+  const ti=document.getElementById('ti_'+testId);
+  if(ti)ti.classList.toggle('completed',checked);
+  saveState();
+  updateCtrlProgress(ctrlId);
+  renderCards();
+  updateOverall();
+}
+
+function updateCtrlProgress(ctrlId){
+  let ctrl=null,catId=null;
+  for(const cid of Object.keys(MASVS)){const c=MASVS[cid].find(c=>c.id===ctrlId);if(c){ctrl=c;catId=cid;break;}}
+  if(!ctrl)return;
+  const visTests=ctrl.tests.filter(t=>platforms[t.platform]);
+  const total=ctrl.tests.length===0?1:visTests.length;
+  const done=ctrl.tests.length===0?(getT(ctrl.id+'__ctrl').done?1:0):visTests.filter(t=>getT(t.id).done).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  const cpf=document.getElementById('cpf_'+ctrlId);
+  if(cpf)cpf.style.width=pct+'%';
+  const cg=document.getElementById('cg_'+ctrlId);
+  if(cg)cg.classList.toggle('completed',done===total&&total>0);
+  const{total:ct,done:cd}=countFor(catId);
+  const badge=document.getElementById('badge_'+catId);
+  if(badge)badge.textContent=cd+'/'+ct;
+}
+
+function saveNote(ctrlId,text){
+  if(!ctrlState[ctrlId])ctrlState[ctrlId]={note:''};
+  ctrlState[ctrlId].note=text;
+  const btn=document.querySelector('#cg_'+ctrlId+' .note-toggle');
+  if(btn)btn.textContent=text?'📝 note':'+ add note';
+  saveState();
+}
+
+function toggleNote(ctrlId){
+  const ta=document.getElementById('cn_'+ctrlId);
+  if(ta){ta.classList.toggle('visible');if(ta.classList.contains('visible'))ta.focus();}
+}
+
+function scrollTo(catId){
+  const el=document.getElementById('cat_'+catId);
+  if(!el)return;
+  el.classList.remove('closed');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function setFilter(f,btn){
+  filterMode=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function togglePlatform(p,btn){
+  platforms[p]=!platforms[p];
+  btn.classList.toggle('active',platforms[p]);
+  render();
+}
+
+function doSearch(val){searchQ=val.toLowerCase();applyFilters();}
+
+function applyFilters(){
+  Object.keys(MASVS).forEach(catId=>{
+    let catVis=false;
+    MASVS[catId].forEach(ctrl=>{
+      let ctrlVis=false;
+      if(ctrl.tests.length===0){
+        const ti=document.getElementById('ti_'+ctrl.id+'__ctrl');
+        if(ti){
+          const isDone=getT(ctrl.id+'__ctrl').done;
+          let show=true;
+          if(filterMode==='pending'&&isDone)show=false;
+          if(filterMode==='done'&&!isDone)show=false;
+          if(searchQ&&!ctrl.id.toLowerCase().includes(searchQ)&&!ctrl.description.toLowerCase().includes(searchQ))show=false;
+          ti.classList.toggle('hidden',!show);
+          if(show)ctrlVis=true;
+        }
+      } else {
+        ctrl.tests.forEach(t=>{
+          const ti=document.getElementById('ti_'+t.id);
+          if(!ti)return;
+          const isDone=getT(t.id).done;
+          let show=true;
+          if(!platforms[t.platform])show=false;
+          if(filterMode==='pending'&&isDone)show=false;
+          if(filterMode==='done'&&!isDone)show=false;
+          if(searchQ&&!t.id.toLowerCase().includes(searchQ)&&!t.name.toLowerCase().includes(searchQ)&&!ctrl.id.toLowerCase().includes(searchQ))show=false;
+          ti.classList.toggle('hidden',!show);
+          if(show)ctrlVis=true;
+        });
+      }
+      const cg=document.getElementById('cg_'+ctrl.id);
+      if(cg)cg.classList.toggle('hidden',!ctrlVis);
+      if(ctrlVis)catVis=true;
+    });
+    const sec=document.getElementById('cat_'+catId);
+    if(sec)sec.classList.toggle('hidden',!catVis);
+  });
+}
+
+function saveProject(){saveState();toast('Saved');}
+function loadProject(){const n=prompt('Load project:',proj());if(n===null)return;document.getElementById('projName').value=n;loadState();render();toast('Loaded: '+n);}
+function newProject(){const n=prompt('New project name:');if(!n)return;document.getElementById('projName').value=n;state={};ctrlState={};render();toast('Created: '+n);}
+function resetAll(){if(!confirm('Reset all data?'))return;state={};ctrlState={};saveState();render();toast('Reset');}
+
+function exportJSON(){
+  const data={project:proj(),date:new Date().toISOString(),version:'MASVS v2.0.0 / MASTG v1.7.0',state,ctrlState};
+  downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),proj()+'_masvs.json');
+}
+
+function exportMarkdown(){
+  let md='# OWASP MASVS v2 Assessment\n\n**Project:** '+proj()+'\n**Date:** '+new Date().toLocaleDateString()+'\n\n---\n\n';
+  Object.keys(MASVS).forEach(catId=>{
+    md+='## '+catId+'\n\n';
+    MASVS[catId].forEach(ctrl=>{
+      const note=getC(ctrl.id).note;
+      md+='### '+ctrl.id+'\n'+ctrl.description+'\n\n';
+      if(note)md+='**Notes:** '+note+'\n\n';
+      if(ctrl.tests.length===0){
+        md+='- ['+(getT(ctrl.id+'__ctrl').done?'x':' ')+'] Reviewed\n';
+      } else {
+        ctrl.tests.forEach(t=>{md+='- ['+(getT(t.id).done?'x':' ')+'] ['+t.platform+'] '+t.id+' — '+t.name+'\n';});
+      }
+      md+='\n';
+    });
+  });
+  downloadBlob(new Blob([md],{type:'text/markdown'}),proj()+'_masvs.md');
+}
+
+function downloadBlob(blob,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Exported: '+name);
+}
+
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const last=localStorage.getItem('masvs2_last')||'';
+  if(last)document.getElementById('projName').value=last;
+  loadState();
+  render();
+  document.getElementById('projName').addEventListener('change',()=>{loadState();render();});
+});
+</script>
+</body>
+</html>
