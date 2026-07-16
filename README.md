@@ -1,73 +1,66 @@
 # OWASP MASVS v2 Checklist
 
-Una herramienta interactiva para realizar auditorías de seguridad en aplicaciones móviles siguiendo el estándar **OWASP Mobile Application Security Verification Standard (MASVS) v2.0** y el **MASTG v1.7.0**.
+An interactive tool for performing mobile application security audits following the **OWASP Mobile Application Security Verification Standard (MASVS) v2.0** and the **MASTG v1.7.0**.
 
-🔗 **[Abrir la herramienta →](https://llucloh.github.io/masvs-checklist)**
+🔗 **[Open the tool →](https://llucloh.github.io/masvs-checklist)**
 
 ---
 
-## ¿Qué es esto?
+## What is this?
 
-Esta checklist cubre los 7 dominios de seguridad del MASVS v2 con todos sus controles y tests asociados del MASTG:
+This checklist covers the 7 security domains of MASVS v2 along with all their associated controls and MASTG tests:
 
-| Dominio | Descripción |
+| Domain | Description |
 |---|---|
-| MASVS-STORAGE | Almacenamiento seguro de datos |
-| MASVS-CRYPTO | Criptografía aplicada correctamente |
-| MASVS-AUTH | Autenticación y autorización |
-| MASVS-NETWORK | Comunicaciones de red seguras |
-| MASVS-PLATFORM | Interacción con la plataforma y WebViews |
-| MASVS-CODE | Calidad de código y actualizaciones |
-| MASVS-RESILIENCE | Anti-reversing y anti-tampering |
+| MASVS-STORAGE | Secure data storage (data-at-rest) |
+| MASVS-CRYPTO | Cryptographic best practices |
+| MASVS-AUTH | Authentication & authorization |
+| MASVS-NETWORK | Secure network communication |
+| MASVS-PLATFORM | Platform interaction & WebViews |
+| MASVS-CODE | Code quality & update mechanisms |
+| MASVS-RESILIENCE | Anti-reversing & tampering |
 
-## Características
+## Features
 
-- **Sin instalación** — funciona directamente en el navegador
-- **Progreso local** — los datos se guardan en `localStorage`, sin servidores
-- **Android e iOS** — filtra tests por plataforma
-- **Búsqueda** — encuentra tests por ID o nombre
-- **Notas por control** — anota evidencias y hallazgos
-- **Exportación** — descarga tu auditoría en JSON o Markdown
-- **Impresión** — genera PDF desde el navegador
-- **Múltiples proyectos** — guarda y carga diferentes auditorías
+- **No installation required** — runs directly in your browser
+- **Local progress** — data is securely saved in `localStorage`, no servers involved
+- **Android & iOS** — filter tests dynamically by platform
+- **Search functionality** — look up tests instantly by ID or name
+- **Control-specific notes** — document evidences and findings
+- **Flexible exporting** — download your assessment as JSON or Markdown
+- **Print-ready** — generate high-quality PDF reports straight from the browser
+- **Multi-project management** — easily save, load, and switch between different audits
 
-## Uso
+## How to Use
 
-1. Abre la herramienta en el link de arriba
-2. Escribe el nombre de tu proyecto (aplicación auditada)
-3. Ve marcando los tests a medida que los completas
-4. Añade notas con evidencias en cada control
-5. Exporta el resultado en Markdown para incluirlo en tu informe
+1. Open the tool using the link above.
+2. Enter your project name (the target application under audit).
+3. Check off the MASTG tests as you complete them.
+4. Add custom notes with evidence for each control.
+5. Export the final results in Markdown to include them in your security report.
 
-> El progreso se guarda automáticamente en tu navegador. Cada alumno mantiene sus propios datos de forma independiente.
+> Your progress is saved automatically in your browser. Each student maintains their own independent data.
 
-## Para instructores
+## For Instructors
 
-Cada alumno trabaja con su propia copia local de los datos. No hay cuenta ni login necesario. Para entregar la auditoría, el alumno puede:
+Every student works with their own local copy of the data. No accounts or logins are required. To submit the final audit, students can:
 
-- Exportar el **JSON** (datos completos para revisar)
-- Exportar el **Markdown** (formato legible para el informe)
-- Hacer **Print → PDF** desde el navegador
+- Export the **JSON** file (raw data for verification)
+- Export the **Markdown** file (human-readable format for reports)
+- Use **Print → PDF** straight from the browser
 
-## Estándar de referencia
+## Reference Standards
 
 - [OWASP MASVS v2.0.0](https://mas.owasp.org/MASVS/)
 - [OWASP MASTG v1.7.0](https://mas.owasp.org/MASTG/)
 - [mas.owasp.org](https://mas.owasp.org)
 
-## Ejecutar localmente
+## Running Locally
 
-No necesitas ningún servidor. Simplemente descarga el `index.html` y ábrelo en tu navegador:
+No server required. Simply clone the repository, download the `index.html` file, and open it in any web browser:
 
 ```bash
-git clone https://github.com/llucloh/masvs-checklist.git
+git clone [https://github.com/llucloh/masvs-checklist.git](https://github.com/llucloh/masvs-checklist.git)
 cd masvs-checklist
 open index.html   # macOS
-# o doble clic en index.html en Windows/Linux
-```
-
-## Créditos
-
-Herramienta desarrollada por **llucloh** para uso educativo en formaciones de seguridad móvil.
-
-Basada en los estándares abiertos de [OWASP MAS](https://mas.owasp.org).
+# or double-click index.html on Windows/Linux
